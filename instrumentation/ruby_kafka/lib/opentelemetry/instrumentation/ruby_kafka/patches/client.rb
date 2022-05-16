@@ -24,6 +24,8 @@ module OpenTelemetry
 
             attributes['messaging.kafka.partition'] = partition if partition
 
+            attributes['peer.service'] = config[:peer_service] if config[:peer_service]
+
             tracer.in_span("#{topic} send", attributes: attributes, kind: :producer) do
               OpenTelemetry.propagation.inject(headers)
               super
@@ -41,6 +43,7 @@ module OpenTelemetry
 
               message_key = Utils.extract_message_key(message.key)
               attributes['messaging.kafka.message_key'] = message_key if message_key
+              attributes['peer.service'] = config[:peer_service] if config[:peer_service]
 
               parent_context = OpenTelemetry.propagation.extract(message.headers)
               OpenTelemetry::Context.with_current(parent_context) do

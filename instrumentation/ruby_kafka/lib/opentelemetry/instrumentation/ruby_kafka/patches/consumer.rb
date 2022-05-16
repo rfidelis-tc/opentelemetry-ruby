@@ -22,6 +22,7 @@ module OpenTelemetry
 
               message_key = Utils.extract_message_key(message.key)
               attributes['messaging.kafka.message_key'] = message_key if message_key
+              attributes['peer.service'] = config[:peer_service] if config[:peer_service]
 
               parent_context = OpenTelemetry.propagation.extract(message.headers)
               span_context = OpenTelemetry::Trace.current_span(parent_context).context
@@ -46,6 +47,7 @@ module OpenTelemetry
                 'messaging.kafka.highwater_mark_offset' => batch.highwater_mark_offset,
                 'messaging.kafka.message_count' => batch.messages.count
               }
+              attributes['peer.service'] = config[:peer_service] if config[:peer_service]
 
               links = batch.messages.map do |message|
                 span_context = OpenTelemetry::Trace.current_span(OpenTelemetry.propagation.extract(message.headers)).context

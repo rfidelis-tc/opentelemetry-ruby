@@ -17,6 +17,8 @@ module OpenTelemetry
               'messaging.destination_kind' => 'topic'
             }
 
+            attributes['peer.service'] = config[:peer_service] if config[:peer_service]
+
             tracer.in_span("#{topic} send", attributes: attributes, kind: :producer) do
               OpenTelemetry.propagation.inject(headers)
               super
